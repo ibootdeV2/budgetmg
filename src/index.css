@@ -1,0 +1,431 @@
+/* ============================================================================
+   FICHIER DE THÈME — Kasaina
+   ============================================================================
+   Toutes les couleurs, polices et réglages visuels de l'application sont
+   centralisés ici, sous forme de "variables CSS" (les --quelque-chose).
+   Un composant React n'écrit jamais une couleur en dur : il utilise une
+   classe Tailwind (ex: bg-primary, text-muted-foreground) qui va lire la
+   valeur correspondante ci-dessous. Changer une couleur ici la change donc
+   PARTOUT dans l'app d'un coup, sans toucher au code des pages.
+
+   FORMAT DES COULEURS : "Teinte Saturation% Luminosité%" (HSL), sans le
+   mot "hsl(...)" autour — Tailwind l'ajoute lui-même. Par exemple :
+     --background: 43 47% 97%;
+   veut dire : teinte 43° (jaune/orangé), saturation 47%, luminosité 97%
+   (donc très clair, presque blanc). Pour choisir tes propres valeurs, un
+   site comme https://hslpicker.com te donne directement ces 3 chiffres.
+   ============================================================================ */
+
+/* Les polices (Nunito, Inter, IBM Plex Mono) sont chargées depuis index.html
+   via <link rel="preconnect"> + <link rel="stylesheet"> plutôt qu'avec un
+   @import ici : un @import CSS est bloquant pour le rendu, ce qui pénalise
+   le premier affichage sur les connexions lentes. */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ==========================================================================
+     MODE JOUR — valeurs par défaut, actives quand aucune classe .dark n'est
+     posée sur <html> (voir ThemeToggle.jsx pour le bouton qui bascule ça).
+     ========================================================================== */
+  :root {
+    /* --- Fond général de l'app (derrière toutes les pages) ---------------- */
+    /* Gris très clair légèrement bleuté (plutôt que le fond "papier chaud"
+       précédent), pour un rendu plus neutre/SaaS proche de la maquette. */
+    --background: 220 20% 96%;
+    /* Couleur du texte "normal" sur ce fond (paragraphes, titres). */
+    --foreground: 222 30% 12%;
+
+    /* --- Cartes (KpiCard, encarts, tableaux...) ---------------------------- */
+    /* Fond des blocs "carte" : les 5 pastilles de résumé en haut du tableau
+       de bord, les blocs "Répartition des dépenses" / "Budget prévu vs
+       réel", chaque ligne de transaction, etc. */
+    --card: 0 0% 100%;
+    --card-foreground: 222 30% 12%;
+
+    /* --- Popovers, menus déroulants, infobulles ---------------------------- */
+    /* Fond du menu ⋮ (actions sur une transaction), du menu ⚙️ (paramètres
+       du compte), des listes déroulantes (Select), etc. */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 30% 12%;
+
+    /* --- Couleur de marque (bleu) -------------------------------------------
+       Utilisée pour : le logo dans la sidebar, les liens, le bouton
+       "Sélectionner le mois/l'année", les bordures colorées des cartes KPI
+       "Total des revenus", etc.
+       Bleu franc calibré à ~55% de luminosité pour rester net et lisible
+       aussi bien en fond de bouton qu'en couleur de texte (WCAG AA). */
+    --primary: 217 91% 55%;
+    --primary-foreground: 210 40% 98%;
+
+    /* --- Gris neutres (fonds discrets, texte secondaire) -------------------
+       secondary/muted : fond des zones peu importantes (barre de mode
+       "Par mois / Par catégorie" sur Budget annuel, fond des lignes de
+       sous-total). muted-foreground : texte grisé (dates, sous-titres,
+       labels "Détail par catégorie", etc.). */
+    --secondary: 220 16% 93%;
+    --secondary-foreground: 222 30% 12%;
+    --muted: 220 16% 93%;
+    --muted-foreground: 220 9% 46%;
+
+    /* --- Or / ocre — accent de mise en avant --------------------------------
+       Utilisé avec parcimonie (jamais en fond de page) : les libellés en
+       majuscules en haut de chaque page ("PRÉVISIONNEL", "MOUVEMENTS",
+       "AOÛ 2026"), l'icône de duplication dans Budget annuel.
+       Luminosité calibrée à 36% (plutôt que 48%) : à 48%, "text-accent" ne
+       tenait qu'à ~2.8:1 sur le fond de page — bien en dessous du seuil
+       WCAG AA de 4.5:1, donc difficile à lire pour certains utilisateurs. */
+    --accent: 36 64% 36%;
+    --accent-foreground: 35 84% 12%;
+
+    /* --- Couleurs "sémantiques" : rouge / vert / jaune --------------------- */
+    /* destructive : bouton "Supprimer", montants de type dépense (le "-" en
+       rouge devant un montant), bordure de la carte KPI "Total des dépenses". */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+    /* success : montants de type revenu, bordure "Épargne générée", variation
+       positive ("↑ X % vs mois préc." en vert). Teinte turquoise/émeraude,
+       plus proche du vert-bleu vu sur la maquette que du vert classique.
+       Luminosité calibrée à 33% pour atteindre ~4.5:1 sur le fond de page
+       quand --success sert de couleur de texte (KPI, badges). */
+    --success: 162 63% 33%;
+    --success-foreground: 162 40% 97%;
+    /* warning : alertes de dépassement de budget, badge "X en attente" de
+       synchronisation. Même calibrage que --success, à 36% au lieu de 42%. */
+    --warning: 35 71% 36%;
+    --warning-foreground: 40 35% 97%;
+
+    /* --- Bordures et champs de saisie --------------------------------------
+       border : traits fins autour des cartes, séparateurs de lignes dans les
+       tableaux. input : bordure des champs de formulaire au repos.
+       ring : halo bleu qui apparaît autour d'un champ/bouton quand on le
+       sélectionne au clavier (accessibilité). */
+    --border: 220 16% 89%;
+    --input: 220 16% 89%;
+    --ring: 217 91% 55%;
+
+    /* --- Palette des graphiques ---------------------------------------------
+       8 couleurs utilisées à tour de rôle pour distinguer les catégories
+       dans les graphiques (camembert "Répartition des dépenses", barres
+       "Budget prévu vs réel"). Catégorie n°1 → chart-1, n°2 → chart-2, etc.
+       Famille bleu / violet / turquoise, en alternance, pour le rendu
+       "dégradé froid" vu sur la maquette. Si tu as plus de 8 catégories,
+       les couleurs sont réutilisées avec une opacité réduite (voir
+       lib/chartColors.js) plutôt que d'en inventer de nouvelles. */
+    --chart-1: 213 90% 58%;
+    --chart-2: 262 60% 62%;
+    --chart-3: 172 66% 42%;
+    --chart-4: 199 85% 58%;
+    --chart-5: 280 55% 66%;
+    --chart-6: 190 75% 45%;
+    --chart-7: 230 60% 62%;
+    --chart-8: 271 50% 58%;
+
+    /* --- Arrondi des coins ---------------------------------------------------
+       Valeur de base des coins arrondis (cartes, boutons, champs). Les
+       classes Tailwind rounded-lg / rounded-md / rounded-sm dans
+       tailwind.config.js dérivent toutes de cette seule valeur, pour que
+       tout l'arrondi de l'app reste cohérent. Plus le chiffre est grand,
+       plus les coins sont ronds (0 = coins carrés). */
+    --radius: 0.9rem;
+
+    /* --- Rythme des animations ----------------------------------------------
+       Une seule courbe de vitesse (--ease-out) et trois durées, pour que
+       toute transition de l'app "parle la même langue" plutôt que
+       d'improviser des durées différentes dans chaque composant.
+       fast = survols/clics rapides, base = ouverture de menus/popovers,
+       slow = entrée en cascade des cartes au chargement d'une page. */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --duration-fast: 120ms;
+    --duration-base: 220ms;
+    --duration-slow: 420ms;
+
+    /* --- Polices de caractères ------------------------------------------------
+       Ceci choisit QUELLE police est utilisée, pas sa taille. La taille du
+       texte (petit titre, gros chiffre KPI, etc.) est réglée directement
+       dans chaque composant avec les classes Tailwind standard : text-xs
+       (12px), text-sm (14px), text-base (16px), text-lg, text-xl, text-2xl,
+       etc. Pour changer la taille d'un texte précis, c'est donc dans le
+       fichier .jsx du composant concerné qu'il faut chercher sa classe
+       text-*, pas ici. Si tu veux redéfinir toute l'échelle de tailles
+       (par exemple rendre "text-sm" plus grand partout dans l'app d'un
+       coup), ça se fait dans Dashboard/tailwind.config.js, section
+       theme.extend.fontSize.
+       - font-heading : titres (h1/h2/h3/h4), ex. "Tableau de bord".
+       - font-body : texte courant, la police par défaut de tout le site.
+       - font-display : réservée pour de gros textes de mise en avant
+         (actuellement identique à font-heading).
+       - font-mono : chiffres des montants en MGA (classe .font-figure).
+       Les quatre variables pointent vers la MÊME police neutre (Inter) :
+       plus de police arrondie séparée pour les titres, plus de police à
+       chasse fixe séparée pour les chiffres — juste des poids différents
+       (voir plus bas, .figure garde tabular-nums pour l'alignement en
+       colonnes des montants, sans changer de famille de police). */
+    --font-heading: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+    /* --- Couleur des ombres ---------------------------------------------------
+       Teinte utilisée pour les ombres portées (.shadow-warm-sm/.shadow-warm/
+       .shadow-warm-lg, définies plus bas). Gris-bleu neutre, cohérent avec
+       le reste de la palette froide de ce thème. */
+    --shadow-color: 220 25% 20%;
+
+    /* --- Menu de gauche (sidebar) ---------------------------------------------
+       Palette INDÉPENDANTE de --background : c'est pour ça que le menu de
+       gauche garde son fond bleu marine foncé même si tu changes le fond
+       général des pages. Si tu veux juste repeindre le menu de gauche,
+       modifie uniquement ce bloc de 8 variables (et son équivalent dans
+       .dark plus bas pour le mode nuit).
+       - sidebar-background : fond du menu entier (le bloc bleu marine).
+       - sidebar-foreground : couleur du texte/icônes des liens du menu.
+       - sidebar-primary : couleur du logo (pièce Coins) et du petit trait
+         vertical qui marque la page active.
+       - sidebar-primary-foreground : couleur de l'icône À L'INTÉRIEUR du
+         logo (contraste avec sidebar-primary qui est son fond).
+       - sidebar-accent : fond au survol d'un lien, et fond du lien de la
+         page actuellement affichée (pastille bleue derrière l'item actif).
+       - sidebar-accent-foreground : couleur du texte sur ce fond survolé/actif.
+       - sidebar-border : ligne de séparation fine en bas du menu, juste
+         au-dessus de l'avatar/icône ⚙️.
+       - sidebar-ring : halo de sélection clavier à l'intérieur du menu. */
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 215 20% 80%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 217 70% 24%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 30% 20%;
+    --sidebar-ring: 217 91% 60%;
+  }
+
+  /* ==========================================================================
+     MODE NUIT — s'active dès que la classe .dark est posée sur <html>
+     (c'est ThemeToggle.jsx, via la librairie next-themes, qui l'ajoute ou la
+     retire au clic sur le bouton soleil/lune). Mêmes variables que ci-dessus,
+     avec des valeurs adaptées à un fond sombre : luminosités inversées,
+     contrastes recalculés pour rester lisibles sans être éblouissants.
+     ========================================================================== */
+  .dark {
+    /* --- Fond général de l'app en mode nuit -------------------------------- */
+    --background: 222 47% 8%;
+    --foreground: 215 20% 92%;
+    --card: 222 40% 11%;
+    --card-foreground: 215 20% 92%;
+    --popover: 222 40% 11%;
+    --popover-foreground: 215 20% 92%;
+
+    /* --- Couleur de marque (bleu), version mode nuit ----------------------- */
+    --primary: 217 91% 65%;
+    --primary-foreground: 222 47% 11%;
+
+    /* --- Gris neutres, version mode nuit ------------------------------------ */
+    --secondary: 222 30% 16%;
+    --secondary-foreground: 215 20% 92%;
+    --muted: 222 30% 16%;
+    --muted-foreground: 217 15% 66%;
+
+    /* --- Or / ocre, version mode nuit --------------------------------------- */
+    --accent: 38 72% 57%;
+    --accent-foreground: 35 84% 10%;
+
+    /* --- Rouge / vert / jaune, version mode nuit ---------------------------- */
+    --destructive: 0 72% 62%;
+    --destructive-foreground: 210 40% 98%;
+    --success: 162 55% 52%;
+    --success-foreground: 162 48% 8%;
+    --warning: 38 72% 57%;
+    --warning-foreground: 35 84% 10%;
+
+    /* --- Bordures et champs de saisie, version mode nuit -------------------- */
+    --border: 222 30% 19%;
+    --input: 222 30% 19%;
+    --ring: 217 91% 65%;
+
+    /* --- Palette des graphiques, version mode nuit -------------------------- */
+    --chart-1: 213 90% 65%;
+    --chart-2: 262 60% 68%;
+    --chart-3: 172 60% 52%;
+    --chart-4: 199 85% 65%;
+    --chart-5: 280 55% 70%;
+    --chart-6: 190 70% 55%;
+    --chart-7: 230 60% 68%;
+    --chart-8: 271 50% 65%;
+
+    /* --- Couleur des ombres, version mode nuit ------------------------------ */
+    --shadow-color: 222 55% 3%;
+
+    /* --- Menu de gauche, version mode nuit -----------------------------------
+       Note : sidebar-background est ici PLUS SOMBRE que --background lui-même
+       (6% de luminosité contre 8%) — c'est volontaire, pour que le menu se
+       distingue toujours légèrement du fond des pages, même en mode nuit. */
+    --sidebar-background: 222 55% 6%;
+    --sidebar-foreground: 215 20% 80%;
+    --sidebar-primary: 217 91% 65%;
+    --sidebar-primary-foreground: 222 47% 11%;
+    --sidebar-accent: 217 60% 20%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 222 30% 16%;
+    --sidebar-ring: 217 91% 65%;
+  }
+}
+
+/* ============================================================================
+   RÈGLES DE BASE — comportements globaux appliqués automatiquement à toute
+   la page, sans qu'un composant ait besoin d'ajouter une classe.
+   ============================================================================ */
+@layer base {
+  /* Par défaut, TOUT élément utilise --border comme couleur de bordure et
+     un halo de sélection clavier semi-transparent (outline-ring/50). Ça
+     évite de devoir répéter "border-border" partout dans le code. */
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  /* Le <body> entier utilise le fond général (--background), le texte
+     général (--foreground) et la police de texte courant (--font-body).
+     "antialiased" adoucit le rendu des lettres à l'écran. */
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  /* Tous les titres (h1 à h4, ex. "Tableau de bord", "Transactions") passent
+     automatiquement en police --font-heading (Nunito), avec un resserrement
+     très léger de l'espacement entre les lettres (-0.01em) pour un rendu
+     plus "affiche", moins "brouillon administratif". */
+  h1, h2, h3, h4 {
+    @apply font-heading;
+    letter-spacing: -0.01em;
+  }
+
+  /* Les montants en MGA s'alignent comme dans un registre comptable :
+     chiffres à largeur fixe (tabular-nums) dans la police --font-mono, pour
+     que "1 000" et "999 999" occupent la même largeur colonne par colonne.
+     Appliqué via la classe .font-figure sur chaque montant affiché. */
+  .figure,
+  .font-figure {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  /* Cache les petites flèches haut/bas natives du navigateur sur les champs
+     numériques (montant, budget par mois) — moins encombrant visuellement. */
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  /* Empêche le zoom automatique d'iOS Safari quand on tape dans un champ :
+     Safari zoome tout seul si le champ a une taille de police < 16px au
+     moment du focus. Cette règle force donc 16px sur mobile uniquement
+     (jusqu'à 767px de large), sans changer la taille affichée sur desktop. */
+  @media (max-width: 767px) {
+    input,
+    select,
+    textarea {
+      font-size: 16px;
+    }
+  }
+
+  /* Zone tactile confortable (recommandation ~44×44px) pour les petits
+     boutons icône (modifier/supprimer, pagination, etc.) SANS agrandir leur
+     apparence visuelle : la classe .touch-target ajoute une zone cliquable
+     invisible plus grande autour du bouton, pratique au doigt sur mobile. */
+  .touch-target {
+    position: relative;
+  }
+  .touch-target::after {
+    content: "";
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+
+  /* Respecte le réglage système "réduire les animations" (accessibilité) :
+     si l'utilisateur l'a activé sur son appareil, toutes les animations et
+     transitions de l'app deviennent quasi instantanées. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Couleur du texte sélectionné (surligné) à la souris, teintée avec
+     --accent plutôt que le bleu par défaut du navigateur. */
+  ::selection {
+    background: hsl(var(--accent) / 0.35);
+  }
+}
+
+/* ============================================================================
+   UTILITAIRES PERSONNALISÉS — classes prêtes à l'emploi, en plus de celles
+   fournies nativement par Tailwind (rounded-*, shadow-*, etc.).
+   ============================================================================ */
+@layer utilities {
+  /* Trois niveaux d'ombre portée, du plus discret au plus marqué, tous
+     teintés avec --shadow-color plutôt qu'un noir plat.
+     - shadow-warm-sm : cartes au repos (KPI, lignes de tableau).
+     - shadow-warm : cartes qui se distinguent un peu plus (encarts d'alerte).
+     - shadow-warm-lg : éléments flottants au-dessus du contenu (bouton "+"
+       flottant sur mobile, menus déroulants ouverts). */
+  .shadow-warm-sm {
+    box-shadow: 0 1px 2px hsl(var(--shadow-color) / 0.06), 0 1px 1px hsl(var(--shadow-color) / 0.04);
+  }
+  .shadow-warm {
+    box-shadow: 0 4px 16px -4px hsl(var(--shadow-color) / 0.12), 0 2px 6px -2px hsl(var(--shadow-color) / 0.08);
+  }
+  .shadow-warm-lg {
+    box-shadow: 0 12px 32px -8px hsl(var(--shadow-color) / 0.18), 0 4px 12px -4px hsl(var(--shadow-color) / 0.1);
+  }
+
+  /* Anneau de focus UNIQUE pour toute l'app (composants maison + shadcn/ui) :
+     visible seulement quand on navigue au clavier (focus-visible), jamais
+     au clic souris — une souris ne doit pas faire clignoter un halo bleu
+     à chaque clic, seul un usage clavier/lecteur d'écran le justifie. */
+  .focus-ring {
+    @apply outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+
+  /* Entrée "en cascade" : chaque enfant direct d'un conteneur .stagger-in
+     apparaît avec un léger décalage dans le temps (piloté par la variable
+     --stagger, posée en style inline sur chaque carte par le composant
+     React, ex. style={{ '--stagger': i }}). Un tableau de bord qui "arrive"
+     par vagues de 40ms se ressent comme vivant ; un tableau de bord qui
+     apparaît d'un bloc se ressent comme généré/statique. Désactivé
+     automatiquement si l'utilisateur préfère un mouvement réduit
+     (voir la règle @media plus haut). */
+  .stagger-in > * {
+    animation: fade-in-up var(--duration-slow) var(--ease-out) both;
+    animation-delay: calc(var(--stagger, 0) * 40ms);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .stagger-in > * {
+      animation: none;
+    }
+  }
+}
+
+/* Animation utilisée par .stagger-in ci-dessus : légère montée + apparition
+   en fondu (6px vers le haut, opacité 0 → 1). */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

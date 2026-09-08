@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Préconnexion + chargement non bloquant des polices : évite qu'un @import CSS
+         ne retarde le premier rendu, important sur les connexions lentes. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Playfair Display : réservée aux deux gros titres de la page de connexion
+         (accroche de marque + "Connexion"), pour reprendre la police serif vue
+         sur la maquette de référence. Le reste de l'app garde Inter (thème
+         inchangé) : voir le style inline "font-serif-login" sur ces titres. -->
+
+    <title>Budget MGA — Tableau de bord</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
